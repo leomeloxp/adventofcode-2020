@@ -1,4 +1,7 @@
-import { assert, assertEquals } from 'https://deno.land/std@0.79.0/testing/asserts.ts';
+import {
+  assert,
+  assertEquals,
+} from "https://deno.land/std@0.79.0/testing/asserts.ts";
 import {
   extractPassportData,
   isNorthPoleCredentials,
@@ -11,8 +14,8 @@ import {
   isValidIyr,
   isValidNorthPoleCredentials,
   isValidPid,
-  NorthPoleCredential
-} from './lib.ts';
+  NorthPoleCredential,
+} from "./lib.ts";
 
 const exampleInput = `ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
 byr:1937 iyr:2017 cid:147 hgt:183cm
@@ -29,49 +32,56 @@ hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in`;
 
 Deno.test({
-  name: 'identify passport data',
+  name: "identify passport data",
   fn: () => {
     assertEquals(extractPassportData(exampleInput).length, 4);
-  }
+  },
 });
 
 Deno.test({
-  name: 'validate passport object',
+  name: "validate passport object",
   fn: () => {
     assert(isPassport(extractPassportData(exampleInput)[0]));
     assert(!isPassport(extractPassportData(exampleInput)[1]));
-  }
+  },
 });
 
 Deno.test({
-  name: 'validate north pole credentials object',
+  name: "validate north pole credentials object",
   fn: () => {
     assert(isNorthPoleCredentials(extractPassportData(exampleInput)[2]));
     assert(!isNorthPoleCredentials(extractPassportData(exampleInput)[3]));
-  }
+  },
 });
 
 Deno.test({
-  name: 'part one',
+  name: "part one",
   fn: () => {
-    assertEquals(extractPassportData(exampleInput).filter(isNorthPoleCredentials).length, 2);
-  }
+    assertEquals(
+      extractPassportData(exampleInput).filter(isNorthPoleCredentials).length,
+      2,
+    );
+  },
 });
 
-const examplePartTwoValues: { field: keyof NorthPoleCredential; isValid: boolean; value: string }[] = [
-  { field: 'byr', isValid: true, value: '2002' },
-  { field: 'byr', isValid: false, value: '2003' },
-  { field: 'hgt', isValid: true, value: '60in' },
-  { field: 'hgt', isValid: true, value: '190cm' },
-  { field: 'hgt', isValid: false, value: '190in' },
-  { field: 'hgt', isValid: false, value: '190' },
-  { field: 'hcl', isValid: true, value: '#123abc' },
-  { field: 'hcl', isValid: false, value: '#123abz' },
-  { field: 'hcl', isValid: false, value: '123abc' },
-  { field: 'ecl', isValid: true, value: 'brn' },
-  { field: 'ecl', isValid: false, value: 'wat' },
-  { field: 'pid', isValid: true, value: '000000001' },
-  { field: 'pid', isValid: false, value: '0123456789' }
+const examplePartTwoValues: {
+  field: keyof NorthPoleCredential;
+  isValid: boolean;
+  value: string;
+}[] = [
+  { field: "byr", isValid: true, value: "2002" },
+  { field: "byr", isValid: false, value: "2003" },
+  { field: "hgt", isValid: true, value: "60in" },
+  { field: "hgt", isValid: true, value: "190cm" },
+  { field: "hgt", isValid: false, value: "190in" },
+  { field: "hgt", isValid: false, value: "190" },
+  { field: "hcl", isValid: true, value: "#123abc" },
+  { field: "hcl", isValid: false, value: "#123abz" },
+  { field: "hcl", isValid: false, value: "123abc" },
+  { field: "ecl", isValid: true, value: "brn" },
+  { field: "ecl", isValid: false, value: "wat" },
+  { field: "pid", isValid: true, value: "000000001" },
+  { field: "pid", isValid: false, value: "0123456789" },
 ];
 
 const fieldToValidationCheck = {
@@ -81,7 +91,7 @@ const fieldToValidationCheck = {
   hgt: (input: string) => isValidHgt(input),
   hcl: (input: string) => isValidHcl(input),
   ecl: (input: string) => isValidEcl(input),
-  pid: (input: string) => isValidPid(input)
+  pid: (input: string) => isValidPid(input),
 };
 
 const invalidPartTwoExamples = `eyr:1972 cid:100
@@ -98,7 +108,8 @@ hgt:59cm ecl:zzz
 eyr:2038 hcl:74454a iyr:2023
 pid:3556412378 byr:2007`;
 
-const validPartTwoExamples = `pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
+const validPartTwoExamples =
+  `pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
 hcl:#623a2f
 
 eyr:2029 ecl:blu cid:129 byr:1989
@@ -112,26 +123,28 @@ eyr:2022
 iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719`;
 
 Deno.test({
-  name: 'part two',
+  name: "part two",
   fn: () => {
     for (const { field, isValid, value } of examplePartTwoValues) {
       if (!fieldToValidationCheck[field](value) === isValid) {
-        console.log('failed check for:', {
+        console.log("failed check for:", {
           field,
-          value
+          value,
         });
       }
       assert(fieldToValidationCheck[field](value) === isValid);
     }
     assert(
-      !extractPassportData(invalidPartTwoExamples).every(entry => {
-        return isNorthPoleCredentials(entry) && isValidNorthPoleCredentials(entry);
-      })
+      !extractPassportData(invalidPartTwoExamples).every((entry) => {
+        return isNorthPoleCredentials(entry) &&
+          isValidNorthPoleCredentials(entry);
+      }),
     );
     assert(
-      extractPassportData(validPartTwoExamples).every(entry => {
-        return isNorthPoleCredentials(entry) && isValidNorthPoleCredentials(entry);
-      })
+      extractPassportData(validPartTwoExamples).every((entry) => {
+        return isNorthPoleCredentials(entry) &&
+          isValidNorthPoleCredentials(entry);
+      }),
     );
-  }
+  },
 });

@@ -26,7 +26,6 @@ export const parseRules = (input: string): RuleMap => {
   return new Map(rulesObjects);
 };
 
-
 type RecursiveFindBagCombinationsArgs = {
   rulesMap: RuleMap;
   current: string;
